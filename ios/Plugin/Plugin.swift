@@ -141,6 +141,7 @@ public class DatePickerPlugin: CAPPlugin {
     
     private func parseDateFromString(date: String) -> Date {
         let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
         dateFormatter.dateFormat = pickerFormat
         if (pickerTimezone != nil) {
             let tz = TimeZone(identifier: pickerTimezone ?? "UTC")
