@@ -138,9 +138,7 @@ public class DatePickerPlugin: CAPPlugin {
             let tz = TimeZone(identifier: pickerTimezone ?? "UTC")
             dateFormatter.timeZone = tz;
         }
-        if ((self.pickerLocale) != nil) {
-            dateFormatter.locale = Locale(identifier: self.pickerLocale!)
-        }
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
         return dateFormatter.string(from: date)
     }
     
@@ -151,9 +149,8 @@ public class DatePickerPlugin: CAPPlugin {
             let tz = TimeZone(identifier: pickerTimezone ?? "UTC")
             dateFormatter.timeZone = tz;
         }
-        if ((self.pickerLocale) != nil) {
-            dateFormatter.locale = Locale(identifier: self.pickerLocale!)
-        }
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+        
         guard let dt = dateFormatter.date(from: date) else {
             self.call?.reject("Failed to parse date")
             self.dismiss()
@@ -229,7 +226,7 @@ public class DatePickerPlugin: CAPPlugin {
         if (self.pickerLocale != nil) {
             self.picker?.locale = Locale(identifier: self.pickerLocale!)
         } else {
-            self.picker?.locale = Locale(identifier: Locale.preferredLanguages.first ?? "en")
+            self.picker?.locale = Locale.current
         }
         
         if (self.pickerMode == "time") {
@@ -288,15 +285,48 @@ public class DatePickerPlugin: CAPPlugin {
         self.alertView?.addSubview(lineView)
     }
     
+    private func makeDate(date: Date) -> String {
+        let dateFormatter = DateFormatter()
+        if (self.pickerLocale != nil) {
+            dateFormatter.locale = Locale(identifier: self.pickerLocale!)
+        } else {
+//            dateFormatter.locale = Locale(identifier: Locale.preferredLanguages.first ?? "en")
+            dateFormatter.locale = Locale.current
+        }
+        dateFormatter.dateStyle = .full
+        dateFormatter.timeStyle = .none
+        return dateFormatter.string(from: date)
+    }
+    
+    private func makeTime(date: Date, force24h: Bool) -> String {
+        let dateFormatter = DateFormatter()
+        if (self.picker24h) {
+            dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+            dateFormatter.dateFormat = "HH:mm"
+        } else {
+            if (self.pickerLocale != nil) {
+                dateFormatter.locale = Locale(identifier: self.pickerLocale!)
+            } else {
+                dateFormatter.locale = Locale.current
+            }
+            dateFormatter.dateStyle = .none
+            dateFormatter.timeStyle = .short
+        }
+        return dateFormatter.string(from: date)
+    }
+    
     @objc func titleChange(_ date: Date) -> String{
         if (self.pickerTitle == nil) {
-            var format: String = self.picker24h ? "E, MMM d, yyyy HH:mm" : "E, MMM d, yyyy hh:mm a"
-            if (self.pickerMode == "time") {
-                format = self.picker24h ? "HH:mm" : "hh:mm a"
-            } else if (self.pickerMode == "date") {
-                format = "E, MMM d, yyyy"
+            switch(self.pickerMode) {
+            case "date":
+                return self.makeDate(date: date)
+            case "time":
+                return self.makeTime(date: date, force24h: self.picker24h)
+            case "dateAndTime":
+                return self.makeDate(date: date) + " " + self.makeTime(date: date, force24h: self.picker24h)
+            default:
+                return ""
             }
-            return self.parseDateFromObject(date: date, format: format)
         }
         return self.pickerTitle!
     }
