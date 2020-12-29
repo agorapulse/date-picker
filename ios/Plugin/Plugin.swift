@@ -290,8 +290,7 @@ public class DatePickerPlugin: CAPPlugin {
         if (self.pickerLocale != nil) {
             dateFormatter.locale = Locale(identifier: self.pickerLocale!)
         } else {
-//            dateFormatter.locale = Locale(identifier: Locale.preferredLanguages.first ?? "en")
-            dateFormatter.locale = Locale.current
+            dateFormatter.locale = Locale(identifier: Locale.preferredLanguages.first ?? "en")
         }
         dateFormatter.dateStyle = .full
         dateFormatter.timeStyle = .none
