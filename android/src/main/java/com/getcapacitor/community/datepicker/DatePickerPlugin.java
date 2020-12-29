@@ -13,6 +13,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.res.Configuration;
+import android.provider.Settings;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
