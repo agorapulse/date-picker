@@ -157,6 +157,8 @@ public class DatePickerPlugin extends Plugin {
             calendar.setTime(parseDateFromString(pickerDate));
         }
 
+        String timeFormat = Settings.System.getString(getContext().getContentResolver(), Settings.System.TIME_12_24);
+
         final TimePickerDialog timePicker = new TimePickerDialog(getContext(), getTheme(), new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
@@ -164,7 +166,7 @@ public class DatePickerPlugin extends Plugin {
                 response.put("value", parseDateFromObject(calendar.getTime()));
                 call.resolve(response);
             }
-        }, calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE), picker24h);
+        }, calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE), picker24h || timeFormat.equals("24"));
 
 
         timePicker.create();
