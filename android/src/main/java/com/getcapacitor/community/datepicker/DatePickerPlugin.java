@@ -13,7 +13,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.res.Configuration;
-import android.provider.Settings;
+import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -158,8 +158,6 @@ public class DatePickerPlugin extends Plugin {
             calendar.setTime(parseDateFromString(pickerDate));
         }
 
-        String timeFormat = Settings.System.getString(getContext().getContentResolver(), Settings.System.TIME_12_24);
-
         final TimePickerDialog timePicker = new TimePickerDialog(getContext(), getTheme(), new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
@@ -167,7 +165,7 @@ public class DatePickerPlugin extends Plugin {
                 response.put("value", parseDateFromObject(calendar.getTime()));
                 call.resolve(response);
             }
-        }, calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE), picker24h || timeFormat.equals("24"));
+        }, calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE), picker24h || DateFormat.is24HourFormat(getContext()));
 
 
         timePicker.create();
